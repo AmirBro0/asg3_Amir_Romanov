@@ -2,9 +2,8 @@ package services;
 
 import controller.MediaController;
 import exception.EpisodeNotAllowedException;
-import exception.*;
 import model.*;
-import repository.*;
+import repository.interfaces.IEpisodeRepository;
 
 import java.util.Scanner;
 

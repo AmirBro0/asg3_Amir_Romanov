@@ -1,14 +1,9 @@
 import connection.DatabaseConnection;
-import connection.IDB;
-import controller.IMediaController;
+import connection.interfaces.IDB;
 import controller.MediaController;
-import model.Episodes;
-import model.MediaContent;
-import model.Movie;
-import model.Series;
 import repository.EpisodeRepository;
-import repository.IEpisodeRepository;
-import repository.IMediaRepository;
+import repository.interfaces.IEpisodeRepository;
+import repository.interfaces.IMediaRepository;
 import repository.MediaRepository;
 import services.MediaStreamingApp;
 

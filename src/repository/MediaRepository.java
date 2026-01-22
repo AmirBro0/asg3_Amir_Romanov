@@ -1,9 +1,11 @@
 package repository;
 
-import connection.IDB;
+import connection.interfaces.IDB;
 import model.MediaContent;
 import model.Movie;
 import model.Series;
+import repository.interfaces.IEpisodeRepository;
+import repository.interfaces.IMediaRepository;
 
 import java.sql.*;
 import java.util.ArrayList;

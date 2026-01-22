@@ -1,12 +1,11 @@
 package controller;
 
+import controller.interfaces.IMediaController;
 import exception.DatabaseException;
 import exception.InvalidMediaException;
 import exception.MediaNotFoundException;
 import model.MediaContent;
-import model.Movie;
-import model.Series;
-import repository.IMediaRepository;
+import repository.interfaces.IMediaRepository;
 
 import java.util.List;
 

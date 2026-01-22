@@ -1,7 +1,8 @@
 package repository;
 
-import connection.IDB;
+import connection.interfaces.IDB;
 import model.Episodes;
+import repository.interfaces.IEpisodeRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
