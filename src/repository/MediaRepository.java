@@ -22,12 +22,13 @@ public class MediaRepository implements IMediaRepository {
 
         try {
             con = db.getConnection();
-            String sql = "INSERT INTO media_content(title,type,duration) VALUES (?,?,?)";
+            String sql = "INSERT INTO media_content(id,title,type,duration) VALUES (?,?,?,?)";
             PreparedStatement st = con.prepareStatement(sql);
 
-            st.setString(1, media.getTitle());
-            st.setString(2, media.getType());
-            st.setInt(3, media.getDuration());
+            st.setInt(1, media.getId());
+            st.setString(2, media.getTitle());
+            st.setString(3, media.getType());
+            st.setInt(4, media.getDuration());
 
             st.execute();
 
@@ -42,7 +43,7 @@ public class MediaRepository implements IMediaRepository {
     @Override
     public MediaContent getMedia(int id) {
 
-        String sql = "SELECT id, title, type, duration FROM media WHERE id=?";
+        String sql = "SELECT id, title, type, duration FROM media_content WHERE id=?";
 
         try (Connection con = db.getConnection();
              PreparedStatement st = con.prepareStatement(sql)) {

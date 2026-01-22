@@ -12,5 +12,6 @@ public class Main {
 
         IDB db = new DatabaseConnection(url, user, password, dbName);
         IMediaRepository repo = new MediaRepository(db);
+        db.getConnection();
     }
 }

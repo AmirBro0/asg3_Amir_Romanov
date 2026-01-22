@@ -26,7 +26,9 @@ public class DatabaseConnection implements IDB {
                 return connection;
             }
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection(host + "/" + dbName, username, password);
+            String url = "jdbc:postgresql://" + host + ":5432/" + dbName;
+            connection = DriverManager.getConnection(url, username, password);
+            System.out.println("Connected successfully");
             return connection;
         } catch (Exception e) {
             System.out.println("failed to connect to postgres: " + e.getMessage());
@@ -39,6 +41,7 @@ public class DatabaseConnection implements IDB {
         if (connection != null) {
             try {
                 connection.close();
+                System.out.println("Closed successfully");
             } catch (SQLException e) {
                 System.out.println("Connection close error: " + e.getMessage());
             }
