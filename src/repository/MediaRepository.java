@@ -73,8 +73,6 @@ public class MediaRepository implements IMediaRepository {
                 }
 
 
-                System.out.println("Media type: " + type);
-
                 return media;
             }
 
@@ -123,7 +121,7 @@ public class MediaRepository implements IMediaRepository {
             System.out.println("sql error: " + e.getMessage());
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     @Override

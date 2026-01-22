@@ -25,4 +25,13 @@ public abstract class MediaContent {
     public void setTitle(String title){
         this.title = title;
     }
+
+    public String toString() {
+        return "Media{" +
+                "id=" + getId() +
+                ", title='" + getTitle() + '\'' +
+                ", type='" + getType() + '\'' +
+                ", duration=" + getDuration() +
+                '}';
+    }
 }

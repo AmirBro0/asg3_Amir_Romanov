@@ -14,18 +14,24 @@ public class MediaController implements IMediaController {
         this.repo = repo;
     }
 
-    public String createMedia(int id,String title, String type, int duration) {
+    @Override
+    public String createMedia(MediaContent media) {
 
-        MediaContent media = null;
-
-        if ("MOVIE".equals(type)) {
-            media = new Movie(id, title, type, duration);
+        if (media == null) {
+            return "Media is null!";
         }
 
+        if (media.getTitle() == null || media.getTitle().isEmpty()) {
+            return "Invalid title!";
+        }
+
+        if (media.getType() == null) {
+            return "Invalid media type!";
+        }
 
         boolean created = repo.createMedia(media);
 
-        return (created ? "User was created!" : "User creation was failed!");
+        return created ? "Media was created!" : "Media creation failed!";
     }
 
     public String getMedia(int id) {
@@ -46,24 +52,19 @@ public class MediaController implements IMediaController {
     }
 
     @Override
-    public String updateMedia(int id, String title, String type, int duration) {
+    public String updateMedia(MediaContent media) {
 
-        MediaContent existing = repo.getMedia(id);
+        if (media == null) {
+            return "Media is null!";
+        }
+
+        MediaContent existing = repo.getMedia(media.getId());
         if (existing == null) {
             return "Media not found!";
         }
 
-        MediaContent media = null;
-
-        if ("MOVIE".equals(type)) {
-            media = new Movie(id, title, type, duration);
-        } else if ("SERIES".equals(type)) {
-            media = new Series(id, title, type, duration);
-        }
-
-
-        if (media == null) {
-            return "Invalid media type!";
+        if (media.getTitle() == null || media.getTitle().isEmpty()) {
+            return "Invalid title!";
         }
 
         boolean updated = repo.updateMedia(media);
