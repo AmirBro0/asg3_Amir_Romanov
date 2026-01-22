@@ -3,9 +3,9 @@ package controller;
 import model.MediaContent;
 
 public interface IMediaController {
-    String createMedia(MediaContent media);
+    int createMedia(MediaContent media);
     String getMedia(int id);
     String getAllMedias();
-    String updateMedia(MediaContent media);
-    String deleteMedia(int id);
+    boolean updateMedia(MediaContent media);
+    boolean deleteMedia(int id);
 }

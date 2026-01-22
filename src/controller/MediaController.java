@@ -1,5 +1,8 @@
 package controller;
 
+import exception.DatabaseException;
+import exception.InvalidMediaException;
+import exception.MediaNotFoundException;
 import model.MediaContent;
 import model.Movie;
 import model.Series;
@@ -15,29 +18,34 @@ public class MediaController implements IMediaController {
     }
 
     @Override
-    public String createMedia(MediaContent media) {
+    public int createMedia(MediaContent media) {
 
         if (media == null) {
-            return "Media is null!";
+            throw new InvalidMediaException("Media is null");
         }
 
         if (media.getTitle() == null || media.getTitle().isEmpty()) {
-            return "Invalid title!";
+            throw new InvalidMediaException("Title is empty");
         }
 
-        if (media.getType() == null) {
-            return "Invalid media type!";
+        int id = repo.createMedia(media);
+
+        if (id == -1) {
+            throw new DatabaseException("Failed to create media");
         }
 
-        boolean created = repo.createMedia(media);
-
-        return created ? "Media was created!" : "Media creation failed!";
+        return id;
     }
 
     public String getMedia(int id) {
-        model.MediaContent media = repo.getMedia(id);
 
-        return (media == null ? "User was not found!" : media.toString());
+        MediaContent media = repo.getMedia(id);
+
+        if (media == null) {
+            throw new MediaNotFoundException(id);
+        }
+
+        return media.toString();
     }
 
     public String getAllMedias() {
@@ -52,37 +60,26 @@ public class MediaController implements IMediaController {
     }
 
     @Override
-    public String updateMedia(MediaContent media) {
-
-        if (media == null) {
-            return "Media is null!";
-        }
-
-        MediaContent existing = repo.getMedia(media.getId());
-        if (existing == null) {
-            return "Media not found!";
-        }
-
-        if (media.getTitle() == null || media.getTitle().isEmpty()) {
-            return "Invalid title!";
-        }
-
-        boolean updated = repo.updateMedia(media);
-
-        return updated ? "Media was updated!" : "Media update failed!";
+    public boolean updateMedia(MediaContent media) {
+        if (media == null) return false;
+        return repo.updateMedia(media);
     }
 
     @Override
-    public String deleteMedia(int id) {
+    public boolean deleteMedia(int id) {
 
-        MediaContent media = repo.getMedia(id);
-        if (media == null) {
-            return "Media not found!";
+        if (repo.getMedia(id) == null) {
+            throw new MediaNotFoundException(id);
         }
 
-        boolean deleted = repo.deleteMedia(id);
-
-        return deleted ? "Media was deleted!" : "Media deletion failed!";
+        return repo.deleteMedia(id);
+    }
+    public MediaContent getMediaObject(int id) {
+        MediaContent media = repo.getMedia(id);
+        if (media == null) {
+            throw new MediaNotFoundException(id);
+        }
+        return media;
     }
 
 

@@ -17,28 +17,32 @@ public class MediaRepository implements IMediaRepository {
     }
 
     @Override
-    public boolean createMedia(MediaContent media) {
-        Connection con = null;
+    public int createMedia(MediaContent media) {
 
-        try {
-            con = db.getConnection();
-            String sql = "INSERT INTO media_content(id,title,type,duration) VALUES (?,?,?,?)";
-            PreparedStatement st = con.prepareStatement(sql);
+        String sql = "INSERT INTO media_content(title, type, duration) VALUES (?, ?, ?)";
 
-            st.setInt(1, media.getId());
-            st.setString(2, media.getTitle());
-            st.setString(3, media.getType());
-            st.setInt(4, media.getDuration());
+        try (Connection con = db.getConnection();
+             PreparedStatement st = con.prepareStatement(
+                     sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            st.execute();
+            st.setString(1, media.getTitle());
+            st.setString(2, media.getType());
+            st.setInt(3, media.getDuration());
 
-            return true;
+            st.executeUpdate();
+
+            ResultSet keys = st.getGeneratedKeys();
+            if (keys.next()) {
+                return keys.getInt(1); // ← ВАЖНО
+            }
+
         } catch (SQLException e) {
             System.out.println("sql error: " + e.getMessage());
         }
 
-        return false;
+        return -1;
     }
+
 
     @Override
     public MediaContent getMedia(int id) {
@@ -65,11 +69,14 @@ public class MediaRepository implements IMediaRepository {
                             rs.getInt("duration")
                     );
                 } else if ("SERIES".equals(type)) {
-                    media = new Series(
+                    Series series = new Series(
                             rs.getInt("id"),
-                            rs.getString("title"),
-                            rs.getInt("duration")
+                            rs.getString("title")
                     );
+                    IEpisodeRepository episodeRepo = new EpisodeRepository(db);
+                    series.setEpisodes(
+                            episodeRepo.getEpisodesBySeriesId(series.getId()));
+                    media = series;
                 }
 
 
@@ -84,50 +91,57 @@ public class MediaRepository implements IMediaRepository {
     }
 
 
+
     @Override
     public List<MediaContent> getAllMedias() {
-        Connection con = null;
 
-        try {
-            con = db.getConnection();
-            String sql = "SELECT id, title, type, duration FROM media_content";
-            Statement st = con.createStatement();
+        List<MediaContent> medias = new ArrayList<>();
+        String sql = "SELECT id, title, type, duration FROM media_content";
 
-            ResultSet rs = st.executeQuery(sql);
-            List<MediaContent> medias = new ArrayList<>();
+        try (Connection con = db.getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            IEpisodeRepository episodeRepo = new EpisodeRepository(db);
+
             while (rs.next()) {
-                MediaContent media;
                 String type = rs.getString("type");
+
                 if ("MOVIE".equals(type)) {
-                    media = new Movie(rs.getInt("id"),
+
+                    medias.add(new Movie(
+                            rs.getInt("id"),
                             rs.getString("title"),
-                            rs.getString("type"),
-                            rs.getInt("duration"));
+                            rs.getInt("duration")
+                    ));
+
                 } else if ("SERIES".equals(type)) {
-                    media = new Series(rs.getInt("id"),
-                            rs.getString("title"),
-                            rs.getString("type"),
-                            rs.getInt("duration"));
-                } else {
-                    continue;
+
+                    Series series = new Series(
+                            rs.getInt("id"),
+                            rs.getString("title")
+                    );
+
+                    series.setEpisodes(
+                            episodeRepo.getEpisodesBySeriesId(series.getId())
+                    );
+
+                    medias.add(series);
                 }
-
-                medias.add(media);
-
             }
 
-            return medias;
         } catch (SQLException e) {
             System.out.println("sql error: " + e.getMessage());
         }
 
-        return new ArrayList<>();
+        return medias;
     }
+
 
     @Override
     public boolean updateMedia(MediaContent media) {
 
-        String sql = "UPDATE media_content SET title = ?, type = ?, duration = ? WHERE id = ? ";
+        String sql = "UPDATE media_content SET title = ?, type = ?, duration = ? WHERE id = ?";
 
         try (Connection con = db.getConnection();
              PreparedStatement st = con.prepareStatement(sql)) {
@@ -137,9 +151,7 @@ public class MediaRepository implements IMediaRepository {
             st.setInt(3, media.getDuration());
             st.setInt(4, media.getId());
 
-            int rows = st.executeUpdate();
-
-            return rows > 0;
+            return st.executeUpdate() > 0;
 
         } catch (SQLException e) {
             System.out.println("sql error: " + e.getMessage());

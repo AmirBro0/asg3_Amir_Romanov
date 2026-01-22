@@ -1,19 +1,27 @@
 package model;
 
-public class Episodes{
-    private String episode_name;
+public class Episodes {
+
+    private String episodeName;
     private int minute;
 
-    public Episodes(String episode_name , int minute){
-        this.episode_name = episode_name;
-        this.minute += minute;
+
+
+    public Episodes(String episodeName, int minute) {
+        this.episodeName = episodeName;
+        this.minute = minute;
+    }
+
+    public String getEpisodeName() {
+        return episodeName;
     }
 
     public int getMinute() {
         return minute;
     }
 
-    public String toString(){
-        return "Episode name: " + episode_name + "\nDuration: " + minute + "\n";
+    @Override
+    public String toString() {
+        return "Episode{name='" + episodeName + "', minute=" + minute + "}";
     }
 }

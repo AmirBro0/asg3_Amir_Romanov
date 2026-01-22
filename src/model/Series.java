@@ -1,28 +1,48 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Series extends MediaContent {
 
-    private Episodes[] episodes1;
+    private List<Episodes> episodes;
 
-    public Series(int id, String title,Episodes[] episodes1) {
+    public Series(int id, String title, List<Episodes> episodes) {
         super(id, title);
-        this.episodes1 = episodes1;
+        this.episodes = episodes;
     }
     public Series(int id, String title,int duration) {
         super(id, title);
-        this.episodes1 = new Episodes[0];
+
+    }
+
+
+    public Series(int id, String title) {
+        super(id, title);
+        this.episodes = new ArrayList<>();
     }
 
     public Series(int id, String title,String type,int duration) {
         super(id, title);
-        this.episodes1 = new Episodes[0];
+    }
+
+    public List<Episodes> getEpisodes() {
+        return episodes;
+    }
+
+    public void setEpisodes(List<Episodes> episodes) {
+        this.episodes = episodes != null ? episodes : new ArrayList<>();
+    }
+
+    public void addEpisode(Episodes episode) {
+        this.episodes.add(episode);
     }
 
     @Override
     public int getDuration(){
         int minutes = 0;
-        for(Episodes e: episodes1){
-            minutes = e.getMinute();
+        for(Episodes e: episodes){
+            minutes += e.getMinute();
         }
         return minutes;
     }
@@ -32,11 +52,7 @@ public class Series extends MediaContent {
         return "SERIES";
     }
 
-    public void getEpisodesName(){
-        for(Episodes e: episodes1){
-            System.out.println(e.toString());
-        }
-    }
+
 
 
 }

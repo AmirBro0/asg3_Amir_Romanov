@@ -5,7 +5,7 @@ import model.MediaContent;
 import java.util.List;
 
 public interface IMediaRepository {
-    boolean createMedia(MediaContent media);
+    int createMedia(MediaContent media);
     MediaContent getMedia(int id);
     List<MediaContent> getAllMedias();
     boolean updateMedia(MediaContent media);
