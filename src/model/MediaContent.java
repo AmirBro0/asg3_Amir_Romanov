@@ -8,11 +8,21 @@ public abstract class MediaContent {
         this.id = id;
         this.title = title;
     }
+    public int getId() {
+        return id;
+    }
+    public void setId(int id){
+        this.id = id;
+    }
 
     public abstract int getDuration();
     public abstract String getType();
 
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title){
+        this.title = title;
     }
 }

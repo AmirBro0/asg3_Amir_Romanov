@@ -7,6 +7,10 @@ public class Movie extends MediaContent {
         super(id, title);
         this.minutes = minutes;
     }
+    public Movie(int id, String title,String type ,int minutes ) {
+        super(id, title);
+        this.minutes = minutes;
+    }
 
     @Override
     public int getDuration() {
