@@ -38,6 +38,7 @@ public class MediaStreamingApp {
                     case 5 -> getAll();
                     case 6 -> deleteMedia();
                     case 7 -> viewEpisodes();
+                    case 8 -> updateMedia();
                     case 0 -> {
                         running = false;
                         System.out.println("Application closed.");
@@ -61,6 +62,7 @@ public class MediaStreamingApp {
                 5. Get all media
                 6. Delete media
                 7. View episodes of series
+                8. Update media
                 0. Exit
                 """);
     }
@@ -144,5 +146,28 @@ public class MediaStreamingApp {
         for (Episodes e : episodes) {
             System.out.println(e);
         }
+    }
+    private void updateMedia() {
+        int id = readInt("Media id: ");
+
+
+        MediaContent media = controller.getMediaObject(id);
+
+
+        String newTitle = readString("New title: ");
+        media.setTitle(newTitle);
+
+
+        if (media instanceof Movie movie) {
+            int newDuration = readInt("New duration (minutes): ");
+            movie = new Movie(movie.getId(), newTitle, newDuration);
+            controller.updateMedia(movie);
+        }
+
+        else if (media instanceof Series series) {
+            controller.updateMedia(series);
+        }
+
+        System.out.println("Media updated successfully.");
     }
 }
