@@ -37,6 +37,7 @@ public class MediaStreamingApp {
                     case 4 -> getMedia();
                     case 5 -> getAll();
                     case 6 -> deleteMedia();
+                    case 7 -> viewEpisodes();
                     case 0 -> {
                         running = false;
                         System.out.println("Application closed.");
@@ -59,6 +60,7 @@ public class MediaStreamingApp {
                 4. Get media by id
                 5. Get all media
                 6. Delete media
+                7. View episodes of series
                 0. Exit
                 """);
     }
@@ -120,5 +122,27 @@ public class MediaStreamingApp {
     private String readString(String msg) {
         System.out.print(msg);
         return sc.nextLine();
+    }
+    private void viewEpisodes() {
+        int seriesId = readInt("Series id: ");
+
+        MediaContent media = controller.getMediaObject(seriesId);
+
+        if (!(media instanceof Series)) {
+            throw new EpisodeNotAllowedException();
+        }
+
+        var episodes = episodeRepo.getEpisodesBySeriesId(seriesId);
+
+
+        if (episodes.isEmpty()) {
+            System.out.println("No episodes found for this series.");
+            return;
+        }
+
+        System.out.println("Episodes:");
+        for (Episodes e : episodes) {
+            System.out.println(e);
+        }
     }
 }
