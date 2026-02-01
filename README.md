@@ -200,6 +200,57 @@ javac Main.java
 java Main
 
 
+after 1.0 version updates:
+
+ADDED FULLY SOLID PRINCIPLES :
+
+	- Controller: Handles user input and output only
+	- Service: Contains validation and business rules
+	- Repository: Manages database operations only
+	- Utils: Contain helper logic (sorting, reflection)
+OCP PRINCIPLES(OPEN-CLOSED):
+	My code allows extensio w/o modification
+	new media can be added , w/o changing all logic
+LCP PRINCIPLES:
+	Wherever mediacontent is expected , there we can use subclasses movie and series
+	exmpl:
+	MediaContent media = new Movie(1, "Inception", 148);
+
+
+Now projects follow strict architecture: 
+		application->Controller -> Service -> Repository -> Database
+
+New interfaces: IMediaService , CRUD 
+
+ADDED LAMBDA EXPRESSION FOR SORTING:
+		SORT BY DURATION , TITLE ;
+		EXMPL:
+		list.stream()
+    	.sorted(Comparator.comparing(MediaContent::getTitle))
+    	.toList();
+ADDED REFLECTION TO SHOW CLASS NAME, SUPER CLASS , FIELDS ,ETC.
+
+OVERALL APP FEATURES:
+
+Add movies
+
+Add series
+
+Add episodes to series
+
+View media by ID
+
+View all media
+
+Update media
+
+Delete media
+
+Sort media using lambdas
+
+Inspect media using reflection
+
+
 
 
 
