@@ -5,6 +5,7 @@ import controller.interfaces.IMediaController;
 import exception.EpisodeNotAllowedException;
 import model.*;
 import repository.interfaces.IEpisodeRepository;
+import utils.ReflectionUtils;
 import utils.SortingUtils;
 
 import java.util.Scanner;
@@ -42,6 +43,7 @@ public class MediaStreamingApp {
                     case 8 -> updateMedia();
                     case 9 -> viewSortedByDuration();
                     case 10 -> viewSortedByTitle();
+                    case 11 -> inspectMedia();
                     case 0 -> running = false;
                     default -> System.out.println("Invalid option");
                 }
@@ -64,7 +66,8 @@ public class MediaStreamingApp {
             7. View episodes of series
             8. Update media
             9. View all media sorted by duration
-            10. View all media sorted by title
+            10.View all media sorted by title
+            11.Reflection
             0. Exit
             """);
     }
@@ -186,6 +189,13 @@ public class MediaStreamingApp {
 
         System.out.println("=== SORTED BY TITLE ===");
         sorted.forEach(System.out::println);
+    }
+    private void inspectMedia() {
+        int id = readInt("Media id: ");
+
+        MediaContent media = controller.getMediaObject(id);
+
+        ReflectionUtils.inspect(media);
     }
 
 
