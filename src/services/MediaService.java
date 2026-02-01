@@ -17,13 +17,10 @@ public class MediaService implements IMediaService {
 
     @Override
     public int createMedia(MediaContent media) {
-        if (media == null)
-            throw new InvalidMediaException("Media is null");
+        if (media == null || media.getTitle() == null || media.getTitle().isBlank())
+            throw new InvalidMediaException("Invalid media");
 
-        if (media.getTitle() == null || media.getTitle().isBlank())
-            throw new InvalidMediaException("Title is empty");
-
-        int id = repo.createMedia(media);
+        int id = repo.create(media);
         if (id == -1)
             throw new DatabaseException("Failed to create media");
 
@@ -32,7 +29,7 @@ public class MediaService implements IMediaService {
 
     @Override
     public MediaContent getMedia(int id) {
-        MediaContent media = repo.getMedia(id);
+        MediaContent media = repo.findById(id);
         if (media == null)
             throw new MediaNotFoundException(id);
         return media;
@@ -40,20 +37,18 @@ public class MediaService implements IMediaService {
 
     @Override
     public List<MediaContent> getAllMedias() {
-        return repo.getAllMedias();
+        return repo.findAll();
     }
 
     @Override
     public boolean updateMedia(MediaContent media) {
-        if (media == null)
-            throw new InvalidMediaException("Media is null");
-        return repo.updateMedia(media);
+        return repo.update(media);
     }
 
     @Override
     public boolean deleteMedia(int id) {
         getMedia(id);
-        return repo.deleteMedia(id);
+        return repo.delete(id);
     }
 
     @Override
@@ -61,4 +56,3 @@ public class MediaService implements IMediaService {
         return repo.getMovieWithMinDuration();
     }
 }
-

@@ -5,6 +5,7 @@ import controller.interfaces.IMediaController;
 import exception.EpisodeNotAllowedException;
 import model.*;
 import repository.interfaces.IEpisodeRepository;
+import utils.SortingUtils;
 
 import java.util.Scanner;
 
@@ -39,6 +40,8 @@ public class MediaStreamingApp {
                     case 6 -> deleteMedia();
                     case 7 -> viewEpisodes();
                     case 8 -> updateMedia();
+                    case 9 -> viewSortedByDuration();
+                    case 10 -> viewSortedByTitle();
                     case 0 -> running = false;
                     default -> System.out.println("Invalid option");
                 }
@@ -51,17 +54,19 @@ public class MediaStreamingApp {
 
     private void printMenu() {
         System.out.println("""
-                
-                1. Add movie
-                2. Add series
-                3. Add episode to series
-                4. Get media by id
-                5. Get all media
-                6. Delete media
-                7. View episodes of series
-                8. Update media
-                0. Exit
-                """);
+            
+            1. Add movie
+            2. Add series
+            3. Add episode to series
+            4. Get media by id
+            5. Get all media
+            6. Delete media
+            7. View episodes of series
+            8. Update media
+            9. View all media sorted by duration
+            10. View all media sorted by title
+            0. Exit
+            """);
     }
 
     private void addMovie() {
@@ -109,7 +114,6 @@ public class MediaStreamingApp {
         System.out.println("Media deleted");
     }
 
-    // ===== helpers =====
 
     private int readInt(String msg) {
         System.out.print(msg);
@@ -167,4 +171,22 @@ public class MediaStreamingApp {
 
         System.out.println("Media updated successfully.");
     }
+    private void viewSortedByDuration() {
+        var sorted = SortingUtils.sortByDuration(
+                controller.getAllMediaObjects()
+        );
+
+        System.out.println("=== SORTED BY DURATION ===");
+        sorted.forEach(System.out::println);
+    }
+    private void viewSortedByTitle() {
+        var sorted = SortingUtils.sortByTitle(
+                controller.getAllMediaObjects()
+        );
+
+        System.out.println("=== SORTED BY TITLE ===");
+        sorted.forEach(System.out::println);
+    }
+
+
 }

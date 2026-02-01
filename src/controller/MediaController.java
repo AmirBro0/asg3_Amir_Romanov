@@ -4,6 +4,8 @@ import controller.interfaces.IMediaController;
 import model.MediaContent;
 import services.interfaces.IMediaService;
 
+import java.util.List;
+
 public class MediaController implements IMediaController {
 
     private final IMediaService service;
@@ -43,5 +45,9 @@ public class MediaController implements IMediaController {
 
     public MediaContent getMediaObject(int id) {
         return service.getMedia(id);
+    }
+    @Override
+    public List<MediaContent> getAllMediaObjects() {
+        return service.getAllMedias();
     }
 }

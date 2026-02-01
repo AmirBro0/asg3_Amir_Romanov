@@ -12,20 +12,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MediaRepository implements IMediaRepository {
+
     private final IDB db;
 
     public MediaRepository(IDB db) {
         this.db = db;
     }
 
+    // ===== CREATE =====
     @Override
-    public int createMedia(MediaContent media) {
+    public Integer create(MediaContent media) {
 
-        String sql = "INSERT INTO media_content(title, type, duration) VALUES (?, ?, ?)";
+        String sql = """
+                INSERT INTO media_content(title, type, duration)
+                VALUES (?, ?, ?)
+                """;
 
         try (Connection con = db.getConnection();
-             PreparedStatement st = con.prepareStatement(
-                     sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement st =
+                     con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             st.setString(1, media.getTitle());
             st.setString(2, media.getType());
@@ -35,11 +40,11 @@ public class MediaRepository implements IMediaRepository {
 
             ResultSet keys = st.getGeneratedKeys();
             if (keys.next()) {
-                return keys.getInt(1); // ← ВАЖНО
+                return keys.getInt(1);
             }
 
         } catch (SQLException e) {
-            System.out.println("sql error: " + e.getMessage());
+            System.out.println("SQL error: " + e.getMessage());
         }
 
         return -1;
@@ -47,9 +52,13 @@ public class MediaRepository implements IMediaRepository {
 
 
     @Override
-    public MediaContent getMedia(int id) {
+    public MediaContent findById(Integer id) {
 
-        String sql = "SELECT id, title, type, duration FROM media_content WHERE id=?";
+        String sql = """
+                SELECT id, title, type, duration
+                FROM media_content
+                WHERE id = ?
+                """;
 
         try (Connection con = db.getConnection();
              PreparedStatement st = con.prepareStatement(sql)) {
@@ -58,35 +67,35 @@ public class MediaRepository implements IMediaRepository {
             ResultSet rs = st.executeQuery();
 
             if (rs.next()) {
-
                 String type = rs.getString("type");
 
-
-                MediaContent media = null;
-
                 if ("MOVIE".equals(type)) {
-                    media = new Movie(
+                    return new Movie(
                             rs.getInt("id"),
                             rs.getString("title"),
                             rs.getInt("duration")
                     );
-                } else if ("SERIES".equals(type)) {
+                }
+
+                if ("SERIES".equals(type)) {
                     Series series = new Series(
                             rs.getInt("id"),
                             rs.getString("title")
                     );
-                    IEpisodeRepository episodeRepo = new EpisodeRepository(db);
+
+                    IEpisodeRepository episodeRepo =
+                            new EpisodeRepository(db);
+
                     series.setEpisodes(
-                            episodeRepo.getEpisodesBySeriesId(series.getId()));
-                    media = series;
+                            episodeRepo.getEpisodesBySeriesId(series.getId())
+                    );
+
+                    return series;
                 }
-
-
-                return media;
             }
 
         } catch (SQLException e) {
-            System.out.println("sql error: " + e.getMessage());
+            System.out.println("SQL error: " + e.getMessage());
         }
 
         return null;
@@ -94,30 +103,34 @@ public class MediaRepository implements IMediaRepository {
 
 
     @Override
-    public List<MediaContent> getAllMedias() {
+    public List<MediaContent> findAll() {
 
-        List<MediaContent> medias = new ArrayList<>();
-        String sql = "SELECT id, title, type, duration FROM media_content";
+        List<MediaContent> list = new ArrayList<>();
+
+        String sql = """
+                SELECT id, title, type, duration
+                FROM media_content
+                """;
 
         try (Connection con = db.getConnection();
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
-            IEpisodeRepository episodeRepo = new EpisodeRepository(db);
+            IEpisodeRepository episodeRepo =
+                    new EpisodeRepository(db);
 
             while (rs.next()) {
                 String type = rs.getString("type");
 
                 if ("MOVIE".equals(type)) {
-
-                    medias.add(new Movie(
+                    list.add(new Movie(
                             rs.getInt("id"),
                             rs.getString("title"),
                             rs.getInt("duration")
                     ));
+                }
 
-                } else if ("SERIES".equals(type)) {
-
+                if ("SERIES".equals(type)) {
                     Series series = new Series(
                             rs.getInt("id"),
                             rs.getString("title")
@@ -127,22 +140,26 @@ public class MediaRepository implements IMediaRepository {
                             episodeRepo.getEpisodesBySeriesId(series.getId())
                     );
 
-                    medias.add(series);
+                    list.add(series);
                 }
             }
 
         } catch (SQLException e) {
-            System.out.println("sql error: " + e.getMessage());
+            System.out.println("SQL error: " + e.getMessage());
         }
 
-        return medias;
+        return list;
     }
 
 
     @Override
-    public boolean updateMedia(MediaContent media) {
+    public boolean update(MediaContent media) {
 
-        String sql = "UPDATE media_content SET title = ?, type = ?, duration = ? WHERE id = ?";
+        String sql = """
+                UPDATE media_content
+                SET title = ?, type = ?, duration = ?
+                WHERE id = ?
+                """;
 
         try (Connection con = db.getConnection();
              PreparedStatement st = con.prepareStatement(sql)) {
@@ -155,14 +172,15 @@ public class MediaRepository implements IMediaRepository {
             return st.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.out.println("sql error: " + e.getMessage());
+            System.out.println("SQL error: " + e.getMessage());
         }
 
         return false;
     }
 
+
     @Override
-    public boolean deleteMedia(int id) {
+    public boolean delete(Integer id) {
 
         String sql = "DELETE FROM media_content WHERE id = ?";
 
@@ -170,24 +188,26 @@ public class MediaRepository implements IMediaRepository {
              PreparedStatement st = con.prepareStatement(sql)) {
 
             st.setInt(1, id);
-
-            int rows = st.executeUpdate();
-
-            return rows > 0;
+            return st.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.out.println("sql error: " + e.getMessage());
+            System.out.println("SQL error: " + e.getMessage());
         }
 
         return false;
     }
 
+
     @Override
     public int getMovieWithMinDuration() {
-        String sql = "SELECT id FROM media_content " +
-                "WHERE type = 'MOVIE' " +
-                "ORDER BY duration ASC " +
-                "LIMIT 1";
+
+        String sql = """
+                SELECT id
+                FROM media_content
+                WHERE type = 'MOVIE'
+                ORDER BY duration
+                LIMIT 1
+                """;
 
         try (Connection con = db.getConnection();
              PreparedStatement st = con.prepareStatement(sql);
@@ -196,11 +216,11 @@ public class MediaRepository implements IMediaRepository {
             if (rs.next()) {
                 return rs.getInt("id");
             }
-            return -1;
 
         } catch (SQLException e) {
-            System.out.println("sql error: " + e.getMessage());
-            return -1;
+            System.out.println("SQL error: " + e.getMessage());
         }
+
+        return -1;
     }
 }
