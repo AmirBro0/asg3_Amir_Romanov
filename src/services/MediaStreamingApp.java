@@ -1,6 +1,7 @@
 package services;
 
 import controller.MediaController;
+import controller.interfaces.IMediaController;
 import exception.EpisodeNotAllowedException;
 import model.*;
 import repository.interfaces.IEpisodeRepository;
@@ -9,11 +10,11 @@ import java.util.Scanner;
 
 public class MediaStreamingApp {
 
-    private final MediaController controller;
+    private final IMediaController controller;
     private final IEpisodeRepository episodeRepo;
     private final Scanner sc = new Scanner(System.in);
 
-    public MediaStreamingApp(MediaController controller,
+    public MediaStreamingApp(IMediaController controller,
                              IEpisodeRepository episodeRepo) {
         this.controller = controller;
         this.episodeRepo = episodeRepo;
@@ -30,7 +31,6 @@ public class MediaStreamingApp {
                 int choice = readInt("Choose option: ");
 
                 switch (choice) {
-
                     case 1 -> addMovie();
                     case 2 -> addSeries();
                     case 3 -> addEpisode();
@@ -39,10 +39,7 @@ public class MediaStreamingApp {
                     case 6 -> deleteMedia();
                     case 7 -> viewEpisodes();
                     case 8 -> updateMedia();
-                    case 0 -> {
-                        running = false;
-                        System.out.println("Application closed.");
-                    }
+                    case 0 -> running = false;
                     default -> System.out.println("Invalid option");
                 }
 

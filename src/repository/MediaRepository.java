@@ -93,7 +93,6 @@ public class MediaRepository implements IMediaRepository {
     }
 
 
-
     @Override
     public List<MediaContent> getAllMedias() {
 
@@ -161,6 +160,7 @@ public class MediaRepository implements IMediaRepository {
 
         return false;
     }
+
     @Override
     public boolean deleteMedia(int id) {
 
@@ -182,4 +182,25 @@ public class MediaRepository implements IMediaRepository {
         return false;
     }
 
+    @Override
+    public int getMovieWithMinDuration() {
+        String sql = "SELECT id FROM media_content " +
+                "WHERE type = 'MOVIE' " +
+                "ORDER BY duration ASC " +
+                "LIMIT 1";
+
+        try (Connection con = db.getConnection();
+             PreparedStatement st = con.prepareStatement(sql);
+             ResultSet rs = st.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+            return -1;
+
+        } catch (SQLException e) {
+            System.out.println("sql error: " + e.getMessage());
+            return -1;
+        }
+    }
 }

@@ -1,85 +1,47 @@
 package controller;
 
 import controller.interfaces.IMediaController;
-import exception.DatabaseException;
-import exception.InvalidMediaException;
-import exception.MediaNotFoundException;
 import model.MediaContent;
-import repository.interfaces.IMediaRepository;
-
-import java.util.List;
+import services.interfaces.IMediaService;
 
 public class MediaController implements IMediaController {
-    private final IMediaRepository repo;
 
-    public MediaController(IMediaRepository repo) {
-        this.repo = repo;
+    private final IMediaService service;
+
+    public MediaController(IMediaService service) {
+        this.service = service;
     }
 
     @Override
     public int createMedia(MediaContent media) {
-
-        if (media == null) {
-            throw new InvalidMediaException("Media is null");
-        }
-
-        if (media.getTitle() == null || media.getTitle().isEmpty()) {
-            throw new InvalidMediaException("Title is empty");
-        }
-
-        int id = repo.createMedia(media);
-
-        if (id == -1) {
-            throw new DatabaseException("Failed to create media");
-        }
-
-        return id;
+        return service.createMedia(media);
     }
 
+    @Override
     public String getMedia(int id) {
-
-        MediaContent media = repo.getMedia(id);
-
-        if (media == null) {
-            throw new MediaNotFoundException(id);
-        }
-
-        return media.toString();
+        return service.getMedia(id).toString();
     }
 
+    @Override
     public String getAllMedias() {
-        List<MediaContent> medias = repo.getAllMedias();
-
-        StringBuilder response = new StringBuilder();
-        for (MediaContent media : medias) {
-            response.append(media.toString()).append("\n");
+        StringBuilder sb = new StringBuilder();
+        for (MediaContent media : service.getAllMedias()) {
+            sb.append(media).append("\n");
         }
-
-        return response.toString();
+        return sb.toString();
     }
 
     @Override
     public boolean updateMedia(MediaContent media) {
-        if (media == null) return false;
-        return repo.updateMedia(media);
+        return service.updateMedia(media);
     }
 
     @Override
     public boolean deleteMedia(int id) {
-
-        if (repo.getMedia(id) == null) {
-            throw new MediaNotFoundException(id);
-        }
-
-        return repo.deleteMedia(id);
+        return service.deleteMedia(id);
     }
+
     public MediaContent getMediaObject(int id) {
-        MediaContent media = repo.getMedia(id);
-        if (media == null) {
-            throw new MediaNotFoundException(id);
-        }
-        return media;
+        return service.getMedia(id);
     }
-
-
 }
